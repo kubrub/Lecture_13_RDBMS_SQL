@@ -87,6 +87,10 @@ select * from works_on where project_no = 'p3' and enter_date <'2008-01-01';
 
 /*4.Напишіть запит для отримання всіх даних про працівника на посаді менеджера, який останнім
 отримав цю посаду*/
+SELECT * FROM employee
+JOIN works_on
+ON employee.emp_no = works_on.emp_no
+WHERE works_on.job  = 'manager' ORDER BY works_on.enter_date DESC LIMIT 1;
 
 /*5.Напишіть запит для отримання назв і бюджетів всіх проектів з бюджетом в діапазоні від $95
 000 до $120 000 включно*/
@@ -108,8 +112,12 @@ where budget*0.51 > 60000;
 
 /*9.Напишіть запит для отримання номерів працівників і відповідних номерів проектів для
 невідомих робіт, пов’язаних з проектом p2*/
+SELECT emp_no, project_no FROM works_on
+WHERE job IS NULL AND project_no = 'p2';
 
 /*10.Напишіть запит для обчислення середнього значення всіх бюджетів, більших за $100 000*/
+SELECT AVG (budget) FROM project
+WHERE budget > 100000;
 
 /*11.Напишіть запит для отримання номера та прізвища працівника з найменшим номером*/
 SELECT *
@@ -117,8 +125,12 @@ FROM employee
 WHERE emp_no =  (SELECT MIN(emp_no) FROM employee);
 
 /*12.Напишіть запит для отримання прізвищ всіх працівників, що працюють над проектом Apollo*/
-select emp_fname, emp_lname from employee, works_on, project
-where employee.emp_no = works_on.emp_no and project.project_no = works_on.project_no and project.project_name = 'Apollo';
+select emp_fname, emp_lname from employee
+join works_on
+on employee.emp_no = works_on.emp_no
+join project
+on project.project_no = works_on.project_no
+where project.project_no = works_on.project_no and project.project_name = 'Apollo';
 
 /*13.Напишіть запит для отримання номерів відділів, імен та прізвищ тих працівників, у яких
 номери менші, ніж 20 000, впорядкувавши результат за зростанням спершу по прізвищах, потім
@@ -130,14 +142,16 @@ order by emp_lname, emp_fname;
 
 /*14. Напишіть запит для отримання імен і прізвищ всіх працівників, які є менеджерами і
 працюють над проектом Mercury.*/
-select emp_fname, emp_lname, works_on.job from employee, works_on, project
-where employee.emp_no = works_on.emp_no
-  and project.project_no = works_on.project_no
-  and project.project_name = 'Mercury'
-  and works_on.job = 'manager';
+select emp_fname, emp_lname, job from employee,  project
+join works_on wo on project.project_no = wo.project_no
+join sample.project p on p.project_no = wo.project_no
+where project.project_name = 'Mercury' and wo.job = 'manager';
 
 /*15.Напишіть запит для отримання номерів всіх проектів та кількості працівників, які працюють
 над цими проектами, у порядку спадання кількості працівників.*/
+SELECT project_no, COUNT(emp_no) as count FROM works_on
+GROUP BY project_no
+ORDER BY count DESC;
 
 /*16.Напишіть запит для отримання повних даних про всіх працівників, чиє відділення
 знаходиться у Далласі.*/
